@@ -18,14 +18,29 @@
   </p>
 
   <div id="log">
+  
+    #set($max=$utils.allOutput.size() - 1)
+    
+    #foreach ($i in [0..$max])
+      #set($lineNo=$i + 1)
+      
+      #if ($meta.shouldEscapeOutput())
+        $lineNo. $utils.escapeHTMLString($utils.allOutput.get($i))<br />
+      #else
+        $lineNo. $utils.allOutput.get($i)<br />
+      #end
+    #end
+  </div>
+  <!--
+  <div id="log">
     #foreach ($line in $utils.allOutput)
       #if ($meta.shouldEscapeOutput())
         $utils.escapeHTMLString($line)<br />
       #else
-        $line
+        $line<br />
       #end
     #end
   </div>
-
+	-->
 </body>
 </html>

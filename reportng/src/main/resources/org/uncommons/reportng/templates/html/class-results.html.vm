@@ -1,0 +1,177 @@
+## This macro formats the results (whether passed, skipped or failed) of the test
+## methods in a single class for inclusion in the HTML report.  It assumes that the
+## the results for the class are in a variable called $classResults.  $id is a page
+## scope variable that is used to assign unique identifiers to divs.
+
+#foreach ($testResult in $classResults)
+<tr style="max-height:300px">
+  <td class="method">
+    #set ($testInstanceName = "")
+    #if ($testResult.testName)
+      #set ($testInstanceName = " ($testResult.testName)")
+    #end
+    
+    $testResult.name$testInstanceName &#40;$utils.formatDuration($testResult.startMillis, $testResult.endMillis)s&#41;
+    
+  </td>
+  
+  <td class="testdescription">
+  	#if ($testResult.method.description && $testResult.method.description.length() > 0)
+      $testResult.method.description
+    #else
+    
+    #end
+  </td>
+  
+ <!--
+  <td class="testdata">
+   #if ($utils.hasArguments($testResult))
+      ##<i>$messages.getString("methodArguments"): </i>
+      <span class="arguments">$utils.getArguments($testResult)</span><br />
+   #end
+  </td>
+-->
+
+  <td class="result" style="max-height:300px">
+    ## Display the dependencies for skipped test methods.
+    #if ($testResult.status == 3) ## 3 means skipped.
+      #if( $utils.hasDependentGroups($testResult) )
+        <i>$messages.getString("dependsOnGroups"): </i>
+        <span class="dependency">$utils.getDependentGroups($testResult)</span>
+        <br />
+      #end
+      #if ($utils.hasDependentMethods($testResult))
+        <i>$messages.getString("dependsOnMethods"): </i>
+        <span class="dependency">$utils.getDependentMethods($testResult)</span>
+      #end
+      #if ($utils.hasSkipException($testResult))
+      	<i>$messages.getString("skipped.reason"): </i>
+      	<span class="dependency">$utils.getSkipExceptionMessage($testResult)</span>
+      #end
+    #end
+
+    #if ($utils.hasArguments($testResult))
+     <i>参数：</i><br/>
+     <span class="arguments">$utils.getArguments($testResult)</span><br/>
+    #end
+    
+    #if ($testResult.throwable && ( $testResult.status == 2 || $meta.shouldShowExpectedExceptions()))
+    <a href="javascript:toggleElement('exception-$id', 'block')" title="$messages.getString("clickToExpandCollapse")"><b>$utils.escapeHTMLString( $testResult.throwable.toString() )</b></a><br />
+    <div class="stackTrace" id="exception-$id">
+      #foreach ($element in $testResult.throwable.stackTrace)
+        $utils.escapeHTMLString( $element.toString() )<br />
+      #end
+      #set ($causes = $utils.getCauses($testResult.throwable))
+      #foreach ($throwable in $causes)
+        #set ($id = $id + 1)
+        <b>$messages.getString("causedBy"): </b> <a href="javascript:toggleElement('exception-$id', 'block')" title="Click to expand/collapse">$utils.escapeHTMLString( $throwable.toString() )</a><br />
+        <div class="stackTrace" id="exception-$id">
+          #foreach ($element in $throwable.stackTrace)
+            $utils.escapeHTMLString($element.toString())<br />
+          #end
+        </div>
+      #end
+    </div>
+    #end
+    #set ($id = $id + 1)
+  </td>
+  
+   ## Show logger output for the test.
+   
+<!-- 开发版 -->
+	<td class="log">
+		#set ($output = $utils.getTestOutput($testResult))
+	    #if ($output.size() > 0)
+			#set ($length = $output.size() - 1)
+	    
+	    <div class="testOutput">
+			#if ($output.size() > 11)
+				#foreach( $i in [0..8] )
+					#set($lineNo = $i + 1)
+			   
+					#if ($meta.shouldEscapeOutput())
+					  $lineNo. $utils.escapeHTMLString($output.get($i))<br/>
+					#else 
+						#if ($utils.containsImg($output.get($i)))
+						#else
+							$lineNo. $output.get($i)<br/>
+						#end
+					#end
+				#end
+				<div id="$testResult.name$testInstanceName" style="display:none">
+				#foreach( $i in [9..$length] )
+					#set($lineNo = $i + 1)
+			   
+					#if ($meta.shouldEscapeOutput())
+					  $lineNo. $utils.escapeHTMLString($output.get($i))<br/>
+					#else 
+						#if ($utils.containsImg($output.get($i)))
+						#else
+							$lineNo. $output.get($i)<br/>
+						#end
+					#end
+				#end
+				</div>
+				<a href="#" onclick="openShutManager(this,'$testResult.name$testInstanceName',false,'收起','查看更多')">查看更多</a>
+			#else
+				#foreach( $i in [0..$length] )
+					#set($lineNo = $i + 1)
+			   
+					#if ($meta.shouldEscapeOutput())
+					  $lineNo. $utils.escapeHTMLString($output.get($i))<br/>
+					#else 
+						#if ($utils.containsImg($output.get($i)))
+						#else
+							$lineNo. $output.get($i)<br/>
+						#end
+					#end
+				#end
+			#end
+	    </div>
+		#end
+	</td>
+
+<!--	
+    #* 原始输出log方式
+	<td class="log">
+		#set ($output = $utils.getTestOutput($testResult))
+	    #if ($output.size() > 0)
+	    <div class="testOutput">
+	      #foreach( $line in $output )
+	        #if ($meta.shouldEscapeOutput())
+	          $utils.escapeHTMLString($line)<br />
+	        #else 
+	        	#if ($utils.containsImg($line))
+	        		
+	        	#else
+	        		$line<br/>
+	        	#end
+	        #end
+	    #end
+	    </div>
+    #end
+	</td>
+  *#
+ -->
+    <td class="screenshot">
+      #set ($output = $utils.getTestOutput($testResult))
+      #if ($output.size() > 0)
+          <div class="screenshotimage" width="100%">
+              #foreach( $line in $output )
+                  #if ($meta.shouldEscapeOutput())
+                      $utils.escapeHTMLString($utils.getImageString($line))<br />
+                  #else
+                  	#if ($utils.containsImg($line))
+	        			$utils.getImageString($line)<br/>
+	        		#else
+	        		#end
+                      
+                  #end
+              #end
+          </div>
+      #end
+	</td>
+
+  
+</tr>
+#end

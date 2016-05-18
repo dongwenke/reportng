@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$messages.locale.language" lang="$messages.locale.language">
+<head>
+  <title>$meta.reportTitle - $result.testContext.name</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name="description" content="TestNG unit test results." />
+  <link href="reportng.css" rel="stylesheet" type="text/css" />
+  #if ($meta.stylesheetPath)
+  <link href="custom.css" rel="stylesheet" type="text/css" />
+  #end
+  <script type="text/javascript" src="reportng.js"></script>
+  
+  <script type="text/javascript">
+//===========================点击展开关闭效果====================================
+function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip){
+	var sourceObj = typeof oSourceObj == "string" ? document.getElementById(oSourceObj) : oSourceObj;
+	var targetObj = typeof oTargetObj == "string" ? document.getElementById(oTargetObj) : oTargetObj;
+	var openTip = oOpenTip || "";
+	var shutTip = oShutTip || "";
+	if(targetObj.style.display!="none"){
+	   if(shutAble) return;
+	   targetObj.style.display="none";
+	   if(openTip  &&  shutTip){
+	    sourceObj.innerHTML = shutTip; 
+	   }
+	} else {
+	   targetObj.style.display="block";
+	   if(openTip  &&  shutTip){
+	    sourceObj.innerHTML = openTip; 
+	   }
+	}
+}
+</script>
+  
+  
+</head>
+<body>
+<h1>$result.testContext.name</h1>
+<p>
+  $messages.getString("testDuration"): $utils.formatDuration($utils.getDuration($result.testContext))s
+</p>
+
+#set ($id = 0)
+#if ($failedConfigurations.size() > 0)
+  <table class="resultsTable configTable">
+    <tr><th colspan="5" class="header failedConfig">$messages.getString("failedConfiguration")</th></tr>
+    #set ($id = 0)
+    #foreach ($testClass in $failedConfigurations.keySet())
+      <tr class="group2">
+        <td colspan="5">$testClass.name</td>
+      </tr>
+	  <tr>
+		<td colspan="1" class="title" width="20%">testcase &#40;$messages.getString("oneclass.duration")&#41;</td>
+		<td colspan="1" class="title" width="15%">$messages.getString("oneclass.description")</td>
+<!--		<td colspan="1" class="title" width="10%">$messages.getString("oneclass.testdata")</td> -->
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.testresult")</td>
+		<td colspan="1" class="title" width="25%">$messages.getString("oneclass.log")</td>
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.screenshot")</td>
+	  </tr>
+      #set ($classResults = $failedConfigurations.get($testClass))
+      #parse("org/uncommons/reportng/templates/html/class-results.html.vm")
+    #end
+
+    #if ($skippedConfigurations.size() > 0)
+      <tr><td colspan="5">&nbsp;</td></tr>
+      <tr><td colspan="5" class="header skippedConfig">$messages.getString("skippedConfiguration")</td></tr>
+      #set ($id = 0)
+      #foreach ($testClass in $skippedConfigurations.keySet())
+      <tr  class="group2">
+          <td colspan="5">$testClass.name</td>
+      </tr>
+	  <tr>
+		<td colspan="1" class="title" width="20%">testcase &#40;$messages.getString("oneclass.duration")&#41;</td>
+		<td colspan="1" class="title" width="15%">$messages.getString("oneclass.description")</td>
+<!--		<td colspan="1" class="title" width="10%">$messages.getString("oneclass.testdata")</td> -->
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.testresult")</td>
+		<td colspan="1" class="title" width="25%">$messages.getString("oneclass.log")</td>
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.screenshot")</td>
+	  </tr>
+        #set ($classResults = $skippedConfigurations.get($testClass))
+        #parse ("org/uncommons/reportng/templates/html/class-results.html.vm")
+      #end
+    #end
+  </table>
+#end
+
+
+#if ($failedTests.size() > 0)
+  <table class="resultsTable">
+    <tr><th colspan="5" class="header failed">$messages.getString("failedTests")</th></tr>
+	
+    #foreach ($testClass in $failedTests.keySet())
+      <tr class="group2">
+        <td colspan="5">$testClass.name</td>
+      </tr>
+	  <tr>
+		<td colspan="1" class="title" width="20%">testcase &#40;$messages.getString("oneclass.duration")&#41;</td>
+		<td colspan="1" class="title" width="15%">$messages.getString("oneclass.description")</td>
+<!--		<td colspan="1" class="title" width="10%">$messages.getString("oneclass.testdata")</td> -->
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.testresult")</td>
+		<td colspan="1" class="title" width="25%">$messages.getString("oneclass.log")</td>
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.screenshot")</td>
+	  </tr>
+      #set ($classResults = $failedTests.get($testClass))
+      #parse ("org/uncommons/reportng/templates/html/class-results.html.vm")
+    #end
+  </table>
+#end
+
+#if ($skippedTests.size() > 0)
+  <table class="resultsTable" width="100%">
+    <tr><th colspan="5" class="header skipped">$messages.getString("skippedTests")</th></tr>
+    #foreach ($testClass in $skippedTests.keySet())
+      <tr class="group2">
+        <td colspan="5">$testClass.name</td>
+      </tr>
+	  <tr>
+		<td colspan="1" class="title" width="20%">testcase &#40;$messages.getString("oneclass.duration")&#41;</td>
+		<td colspan="1" class="title" width="15%">$messages.getString("oneclass.description")</td>
+<!--		<td colspan="1" class="title" width="10%">$messages.getString("oneclass.testdata")</td> -->
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.testresult")</td>
+		<td colspan="1" class="title" width="25%">$messages.getString("oneclass.log")</td>
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.screenshot")</td>
+	  </tr>
+      #set ($classResults = $skippedTests.get($testClass))
+      #parse ("org/uncommons/reportng/templates/html/class-results.html.vm")
+    #end
+  </table>
+#end
+
+#if ($passedTests.size() > 0)
+  <table class="resultsTable">
+    <tr><th colspan="5" class="header passed">$messages.getString("passedTests")</th></tr>
+    #foreach ($testClass in $passedTests.keySet())
+      <tr class="group2">
+        <td colspan="5">$testClass.name</td>
+      </tr>
+	  <tr>
+		<td colspan="1" class="title" width="20%">testcase &#40;$messages.getString("oneclass.duration")&#41;</td>
+		<td colspan="1" class="title" width="15%">$messages.getString("oneclass.description")</td>
+<!--		<td colspan="1" class="title" width="10%">$messages.getString("oneclass.testdata")</td> -->
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.testresult")</td>
+		<td colspan="1" class="title" width="25%">$messages.getString("oneclass.log")</td>
+		<td colspan="1" class="title" width="20%">$messages.getString("oneclass.screenshot")</td>
+	  </tr>
+      #set ($classResults = $passedTests.get($testClass))
+      #parse ("org/uncommons/reportng/templates/html/class-results.html.vm")
+    #end
+  </table>
+#end
+  
+</body>
+</html>
